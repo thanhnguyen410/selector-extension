@@ -3,7 +3,6 @@ import { initElementSelector } from '@/newtab/utils/elementSelector';
 import dayjs from 'dayjs';
 import dbStorage from '@/db/storage';
 import cronParser from 'cron-parser';
-import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowTriggers from './BackgroundWorkflowTriggers';
 
 async function handleScheduleBackup() {
@@ -45,9 +44,9 @@ async function handleScheduleBackup() {
     }
 
     const base64 = btoa(encodeURIComponent(JSON.stringify(payload)));
-    const filename = `${
-      localBackupSettings.folderName ? `${localBackupSettings.folderName}/` : ''
-    }${dayjs().format('DD-MMM-YYYY--HH-mm')}.json`;
+    // eslint-disable-next-line prettier/prettier
+    const filename = `${localBackupSettings.folderName ? `${localBackupSettings.folderName}/` : ''
+      }${dayjs().format('DD-MMM-YYYY--HH-mm')}.json`;
 
     await browser.downloads.download({
       filename,
@@ -76,14 +75,9 @@ async function handleScheduleBackup() {
 }
 
 class BackgroundEventsListeners {
-  static onActionClicked() {
-    BackgroundUtils.openDashboard();
-  }
 
   static onCommand(name) {
-    if (name === 'open-dashboard') {
-      BackgroundUtils.openDashboard();
-    } else if (name === 'element-picker') {
+    if (name === 'element-picker') {
       initElementSelector();
     }
   }
@@ -105,19 +99,6 @@ class BackgroundEventsListeners {
 
   static onContextMenuClicked(event, tab) {
     BackgroundWorkflowTriggers.contextMenu(event, tab);
-  }
-
-  static async onNotificationClicked(notificationId) {
-    if (notificationId.startsWith('logs')) {
-      const { 1: logId } = notificationId.split(':');
-
-      const [tab] = await browser.tabs.query({
-        url: browser.runtime.getURL('/newtab.html'),
-      });
-      if (!tab) await BackgroundUtils.openDashboard('');
-
-      await BackgroundUtils.sendMessageToDashboard('open-logs', { logId });
-    }
   }
 
   static onRuntimeStartup() {

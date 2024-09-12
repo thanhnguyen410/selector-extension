@@ -5,7 +5,6 @@ import getFile, { readFileAsBase64 } from '@/utils/getFile';
 import automa from '@business';
 // import { workflowState } from '@/workflowEngine';
 import { registerWorkflowTrigger } from '../utils/workflowTrigger';
-import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
 import BackgroundEventsListeners from './BackgroundEventsListeners';
 
@@ -69,7 +68,6 @@ message.on('fetch:text', (url) => {
   return fetch(url).then((response) => response.text());
 });
 
-message.on('open:dashboard', (url) => BackgroundUtils.openDashboard(url));
 message.on('set:active-tab', (tabId) => {
   return browser.tabs.update(tabId, { active: true });
 });
@@ -111,30 +109,9 @@ message.on('get:tab-screenshot', (options, sender) =>
   browser.tabs.captureVisibleTab(sender.tab.windowId, options)
 );
 
-message.on('dashboard:refresh-packages', async () => {
-  const tabs = await browser.tabs.query({
-    url: browser.runtime.getURL('/newtab.html'),
-  });
-
-  tabs.forEach((tab) => {
-    browser.tabs.sendMessage(tab.id, {
-      type: 'refresh-packages',
-    });
-  });
-});
 
 // message.on('workflow:stop', (stateId) => workflowState.stop(stateId));
 message.on('workflow:execute', async (workflowData, sender) => {
-  const context = workflowData.settings.execContext;
-  const isMV2 = browser.runtime.getManifest().manifest_version === 2;
-  if (!isMV2 && (!context || context === 'popup')) {
-    await BackgroundUtils.openDashboard('?fromBackground=true', false);
-    await BackgroundUtils.sendMessageToDashboard('workflow:execute', {
-      data: workflowData,
-      options: workflowData.option,
-    });
-    return;
-  }
 
   if (workflowData.includeTabId) {
     if (!workflowData.options) workflowData.options = {};
@@ -147,58 +124,10 @@ message.on('workflow:execute', async (workflowData, sender) => {
     workflowData?.options || {}
   );
 });
-message.on(
-  'workflow:added',
-  ({ workflowId, teamId, workflowData, source = 'community' }) => {
-    let path = `/workflows/${workflowId}`;
 
-    if (source === 'team') {
-      if (!teamId) return;
-      path = `/teams/${teamId}/workflows/${workflowId}`;
-    }
-
-    browser.tabs
-      .query({ url: browser.runtime.getURL('/newtab.html') })
-      .then((tabs) => {
-        if (tabs.length >= 1) {
-          const lastTab = tabs.at(-1);
-
-          tabs.forEach((tab) => {
-            browser.tabs.sendMessage(tab.id, {
-              data: { workflowId, teamId, source, workflowData },
-              type: 'workflow:added',
-            });
-          });
-
-          browser.tabs.update(lastTab.id, {
-            active: true,
-          });
-          browser.windows.update(lastTab.windowId, { focused: true });
-        } else {
-          BackgroundUtils.openDashboard(`${path}?permission=true`);
-        }
-      });
-  }
-);
 message.on('workflow:register', ({ triggerBlock, workflowId }) => {
   registerWorkflowTrigger(workflowId, triggerBlock);
 });
-message.on('recording:stop', async () => {
-  try {
-    await BackgroundUtils.openDashboard('', false);
-    await BackgroundUtils.sendMessageToDashboard('recording:stop');
-  } catch (error) {
-    console.error(error);
-  }
-});
-// message.on('workflow:resume', ({ id, nextBlock }) => {
-//   if (!id) return;
-//   workflowState.resume(id, nextBlock);
-// });
-// message.on('workflow:breakpoint', (id) => {
-//   if (!id) return;
-//   workflowState.update(id, { status: 'breakpoint' });
-// });
 
 automa('background', message);
 

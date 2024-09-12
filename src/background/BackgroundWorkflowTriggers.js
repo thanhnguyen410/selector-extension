@@ -6,7 +6,6 @@ import {
   registerSpecificDay,
   registerWorkflowTrigger,
 } from '@/utils/workflowTrigger';
-import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
 
 async function executeWorkflow(workflowData, options) {
@@ -16,14 +15,7 @@ async function executeWorkflow(workflowData, options) {
   const context = workflowData.settings.execContext;
   if (isMV2 || context === 'background') {
     BackgroundWorkflowUtils.executeWorkflow(workflowData, options);
-    return;
   }
-
-  await BackgroundUtils.openDashboard('?fromBackground=true', false);
-  await BackgroundUtils.sendMessageToDashboard('workflow:execute', {
-    data: workflowData,
-    options,
-  });
 }
 
 class BackgroundWorkflowTriggers {
