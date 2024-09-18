@@ -1,6 +1,7 @@
 {
   "name": "mktlogin",
   "version": "1.28.27",
+  "license": "MKT_license",
   "description": "An extension for your browser by connecting blocks",
   "repository": {
     "type": "git",

@@ -42,7 +42,7 @@ const options = {
   entry: {
     sandbox: path.join(__dirname, 'src', 'sandbox', 'index.js'),
     execute: path.join(__dirname, 'src', 'execute', 'index.js'),
-    newtab: path.join(__dirname, 'src', 'newtab', 'index.js'),
+    // newtab: path.join(__dirname, 'src', 'newtab', 'index.js'),
     popup: path.join(__dirname, 'src', 'popup', 'index.js'),
     params: path.join(__dirname, 'src', 'params', 'index.js'),
     background: path.join(__dirname, 'src', 'background', 'index.js'),
@@ -189,12 +189,12 @@ const options = {
         },
       ],
     }),
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'src', 'newtab', 'index.html'),
-      filename: 'newtab.html',
-      chunks: ['newtab'],
-      cache: false,
-    }),
+    // new HtmlWebpackPlugin({
+    //   template: path.join(__dirname, 'src', 'newtab', 'index.html'),
+    //   filename: 'newtab.html',
+    //   chunks: ['newtab'],
+    //   cache: false,
+    // }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'sandbox', 'index.html'),
       filename: 'sandbox.html',

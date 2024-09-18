@@ -21,9 +21,9 @@ browser.commands.onCommand.addListener(BackgroundEventsListeners.onCommand);
 browser.runtime.onStartup.addListener(
   BackgroundEventsListeners.onRuntimeStartup
 );
-browser.runtime.onInstalled.addListener(
-  BackgroundEventsListeners.onRuntimeInstalled
-);
+// browser.runtime.onInstalled.addListener(
+//   BackgroundEventsListeners.onRuntimeInstalled
+// );
 
 browser.webNavigation.onCompleted.addListener(
   BackgroundEventsListeners.onWebNavigationCompleted
