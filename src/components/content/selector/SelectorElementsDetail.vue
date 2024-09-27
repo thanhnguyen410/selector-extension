@@ -123,6 +123,14 @@ defineEmits(['update:activeTab', 'execute', 'highlight', 'update']);
 
 const rootElement = inject('rootElement');
 
+function generateResolveXpath(name, value) {
+  if (name === 'text') {
+    return `//${props.selectedElements[0].tagName.toLowerCase()}[${name}()='${value}']`;
+  }
+
+  return `//${props.selectedElements[0].tagName.toLowerCase()}[@${name}='${value}']`;
+}
+
 function copySelector(name, value) {
   rootElement.shadowRoot
     .querySelector(`[data-testid="${name}"] input`)
@@ -132,7 +140,7 @@ function copySelector(name, value) {
     .writeText(
       type === 'css'
         ? `${props.selectedElements[0].tagName.toLowerCase()}[${name}="${value}"]`
-        : `//${props.selectedElements[0].tagName.toLowerCase()}[@${name}='${value}']`
+        : generateResolveXpath(name, value)
     )
     .catch((error) => {
       document.execCommand('copy');

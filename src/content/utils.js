@@ -71,6 +71,16 @@ export function getElementRect(target, withAttributes) {
       attributes[name] = value;
     });
 
+    if (
+      target &&
+      target.childNodes.length >= 1 &&
+      target?.childNodes.length > 0 &&
+      target?.childNodes[0].nodeType === Node.TEXT_NODE &&
+      target.textContent.trim() !== ''
+    ) {
+      attributes.text = target.textContent.trim();
+    }
+
     result.attributes = attributes;
     result.tagName = target.tagName;
   }
@@ -91,22 +101,27 @@ export function getElementPath(el, root = document.documentElement) {
 
 export function generateXPath(element, root = document.body) {
   if (!element) return null;
-  if (element.id !== '') return `id("${element.id}")`;
-  if (element === root) return `//${element.tagName}`;
+  if (element === root) return `//${element.tagName.toLowerCase()}`;
+
+  if (element.id) {
+    return `//*[@id="${element.id}"]`;
+  }
 
   let ix = 0;
-  const siblings = element.parentNode.childNodes;
+  const siblings = element.parentNode.children; // Chỉ lấy các phần tử HTML
 
-  for (let index = 0; index < siblings.length; index += 1) {
+  // eslint-disable-next-line no-plusplus
+  for (let index = 0; index < siblings.length; index++) {
     const sibling = siblings[index];
 
     if (sibling === element) {
-      return `${generateXPath(element.parentNode)}/${element.tagName}[${
-        ix + 1
-      }]`;
+      return `${generateXPath(
+        element.parentNode,
+        root
+      )}/${element.tagName.toLowerCase()}[${ix + 1}]`;
     }
 
-    if (sibling.nodeType === 1 && sibling.tagName === element.tagName) {
+    if (sibling.tagName === element.tagName) {
       ix += 1;
     }
   }

@@ -301,7 +301,6 @@ function onMessage({ data }) {
       props.selectorType === 'css'
         ? finder(frameElement, { tagName: () => true })
         : generateXPath(frameElement);
-
     emit('selected', {
       elements: data.elements,
       selector: `${frameSelector} |> ${data.selector}`,

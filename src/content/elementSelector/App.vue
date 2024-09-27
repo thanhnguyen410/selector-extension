@@ -18,7 +18,7 @@
       class="root-card pointer-events-auto relative z-50 rounded-lg bg-white shadow-xl"
     >
       <div
-        class="drag-button absolute z-50 cursor-move rounded-lg bg-white p-2 p-1 shadow-xl"
+        class="drag-button absolute z-50 cursor-move rounded-lg bg-white p-2 shadow-xl"
         style="top: -15px; left: -15px"
       >
         <v-remixicon
